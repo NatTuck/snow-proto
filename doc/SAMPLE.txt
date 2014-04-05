@@ -1,0 +1,11 @@
+
+module main
+
+main = |args, env| ->
+  args.each |arg| ->
+    if aa[0] == "a"
+      puts "goat: #{aa}"
+    ;;
+  ;;
+;;
+
