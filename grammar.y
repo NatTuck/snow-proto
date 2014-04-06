@@ -3,6 +3,8 @@
 %include {#include <string.h>} 
 %include {#include <stdlib.h>} 
 
+%include {#include "ast.h"}
+
 %parse_failure 
 {
     printf("Giving up. Parser is hopelessly lost...\n");
@@ -92,13 +94,11 @@ expr(Y) ::= SUBOP expr(A). [UNARY]
     Y = A;
 }
 
-/*
 expr(Y) ::= LPAREN expr(A) RPAREN.
 {
     printf("Parens (%s)\n", A);
     Y = A;
 }
-*/
 
 params(Y) ::= SYMBOL(A).
 {
@@ -128,10 +128,10 @@ args(Y) ::= args(A) COMMA expr(B).
     Y = B;
 }
 
-expr(Y) ::= SYMBOL(A) LPAREN args(B) RPAREN.
+expr(Y) ::= expr(A) LPAREN RPAREN.
 {
-    printf("call %s(%s)\n", A, B);
-    Y = B;
+    printf("call %s()\n", A);
+    Y = A;
 }
 
 expr(Y) ::= expr(A) LPAREN args(B) RPAREN.
@@ -140,16 +140,16 @@ expr(Y) ::= expr(A) LPAREN args(B) RPAREN.
     Y = B;
 }
 
-expr(Y) ::= expr(A) LPAREN RPAREN.
-{
-    printf("call %s()\n", A);
-    Y = A;
-}
-
 expr(Y) ::= expr(A) LPAREN args(B) COMMA RPAREN.
 {
     printf("call %s(%s)\n", A, B);
     Y = B;
+}
+
+expr(Y) ::= expr(A) LPAREN RPAREN lambda(L).
+{
+    printf("call %s() %s\n", A, L);
+    Y = A;
 }
 
 expr(Y) ::= expr(A) LPAREN args(B) RPAREN lambda(L).
@@ -158,15 +158,9 @@ expr(Y) ::= expr(A) LPAREN args(B) RPAREN lambda(L).
     Y = B;
 }
 
-expr(Y) ::= expr(A) LPAREN RPAREN lambda(L).
-{
-    printf("call %s()\n", A, L);
-    Y = A;
-}
-
 expr(Y) ::= expr(A) LPAREN args(B) COMMA RPAREN lambda(L).
 {
-    printf("call %s(%s)\n", A, B, L);
+    printf("call %s(%s) %s\n", A, B, L);
     Y = B;
 }
 
