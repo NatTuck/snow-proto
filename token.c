@@ -3,13 +3,11 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "token.h"
 #include "grammar.h"
-
-//#FIXME
-#include <string.h>
-#define lstrdup strdup
 
 char*
 lstrdupn(const char* aa, int nn)
@@ -75,13 +73,24 @@ next_token(const char* text, int* pos)
 
     switch (text[*pos]) {
 
+    case '~':
+    case '@':
+    case '!':
+        token->code = UNARY;
+        token->text = lstrdupn(text + *pos, 1);
+        break;
+
     case '-':
         if (text[*pos+1] == '>') {
             token->code = ARROW;
             token->text = lstrdupn(text + *pos, 2);
-            break;
         }
-        // else fall through
+        else {
+            token->code = SUBOP;
+            token->text = lstrdupn(text + *pos, 1);
+        }
+        break;
+
     case '+':
         token->code = ADDOP;
         token->text = lstrdupn(text + *pos, 1);
@@ -114,7 +123,12 @@ next_token(const char* text, int* pos)
             token->text = lstrdupn(text + *pos, 1);
         }
         break;
-        
+
+    case '=':
+        token->code = BIND;
+        token->text = lstrdupn(text + *pos, 1);
+        break;
+
     default: 
         if (isdigit(text[*pos])) {
             token->code = NUMBER;
@@ -132,3 +146,4 @@ next_token(const char* text, int* pos)
 
     return token;
 }
+

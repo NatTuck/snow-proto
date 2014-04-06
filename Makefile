@@ -10,7 +10,7 @@ lemon: lemon.c
 	$(CC) -o lemon lemon.c
 
 grammar.c: grammar.y lemon
-	./lemon grammar.y
+	./lemon -c grammar.y
 
 grammar.h: grammar.c
 	touch grammar.h
