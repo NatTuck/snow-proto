@@ -6,7 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "token.h"
+#include "snow/token.h"
+
 #include "grammar.h"
 
 char*

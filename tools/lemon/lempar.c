@@ -598,6 +598,7 @@ static void yy_reduce(
   */
 %%
   };
+  ParseARG_STORE;
   yygoto = yyRuleInfo[yyruleno].lhs;
   yysize = yyRuleInfo[yyruleno].nrhs;
   yypParser->yyidx -= yysize;

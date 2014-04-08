@@ -1,5 +1,5 @@
 
-PARSER_SRCS := $(wildcard src/parser/*.c) src/parser/grammar.c
+PARSER_SRCS := $(sort $(wildcard src/parser/*.c) src/parser/grammar.c)
 PARSER_OBJS := $(PARSER_SRCS:.c=.o)
 
 HDRS   += src/parser/grammar.h

@@ -1,0 +1,3 @@
+[submodule "vendor/libdrip"]
+	path = vendor/libdrip
+	url = git@github.com:NatTuck/libdrip.git

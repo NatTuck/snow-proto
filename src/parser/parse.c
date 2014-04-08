@@ -1,13 +1,16 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#include "parser.h"
+#include "snow/parser.h"
+#include "snow/token.h"
+#include "snow/ast.h"
+
 #include "grammar.h"
-#include "token.h"
-// calmphoenix400
 
 int
 main(int argc, char* argv[])
@@ -25,15 +28,20 @@ main(int argc, char* argv[])
         Token* tt;
         int nn = 0;
 
+        TreeNode* root = 0;
+
         while ((tt = next_token(line, &nn))) {
-            Parse(parser, tt->code, tt->text);
+            Parse(parser, tt->code, tt->text, &root);
         }
 
-        Parse(parser, 0, 0);
+        Parse(parser, 0, 0, &root);
 
         ParseFree(parser, free);
 
         free(line);
+
+        assert(root != 0);
+        printf("%s\n", pretty_print_tree(root));
     }
 
 

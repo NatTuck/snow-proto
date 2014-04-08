@@ -1,8 +1,10 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-void* ParseAlloc(void* );
-void  ParseFree(void*, void*);
-void  Parse(void*, int, char*);
+#include "snow/ast.h"
+
+void* ParseAlloc(void* fn);
+void  ParseFree(void* pp, void* fn);
+void  Parse(void* pp, int tt, char* ss, TreeNode** nn);
 
 #endif
