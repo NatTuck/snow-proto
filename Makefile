@@ -4,7 +4,7 @@ BASE    := $(shell readlink -f .)
 CC      := clang
 CFLAGS  := -g -Iinclude -Isrc/parser -Ivendor/libdrip/include
 LIBS    := -ldrip -lreadline -lgc
-LDFLAGS := 
+LDFLAGS := -Llib
 
 PHONY   := 
 OBJS    :=
@@ -23,13 +23,13 @@ lib/libdrip.so:
 	(cd vendor/libdrip && make)
 	cp vendor/libdrip/libdrip.so lib/libdrip.so
 
-bin/parse: $(OBJS) 
+bin/parse: $(OBJS) lib/libdrip.so 
 	$(CC) $(CFLAGS) -o bin/parse $(OBJS) $(LDFLAGS) $(LIBS)
 
 %.o : %.c $(HDRS)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-.PHONY: all clean $(PHONY)
+.PHONY: all update clean $(PHONY)
 
 parse: parse.c token.c grammar.c grammar.h
 	$(CC) -o parse parse.c token.c grammar.c $(LIBS)
@@ -39,6 +39,10 @@ grammar.c: grammar.y lemon
 
 grammar.h: grammar.c
 	touch grammar.h
+
+update:
+	git submodule init
+	git submodule update
 
 clean:
 	rm -f $(BINS) $(OBJS) $(DEBRIS)
