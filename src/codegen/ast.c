@@ -90,6 +90,8 @@ alloc_dot_node(TreeNode* arg0, TreeNode* attr)
 TreeNode* 
 alloc_bind_node(TreeNode* name, TreeNode* arg0)
 {
+    assert(name->type == SYMBOL_TYPE);
+
     TreeNode *tn = alloc_tree_node(BIND_TYPE);
     tn->name = lstrdup((char*)name->data);
     tn->arg0 = arg0;
@@ -233,6 +235,7 @@ pretty_print_unop(TreeNode* unop, int dd)
 char*
 pretty_print_dot(TreeNode* dot, int dd)
 {
+    assert(dot->type == DOT_TYPE);
     char* arg0 = pretty_print_any(dot->arg0, dd);
     char* arg1 = pretty_print_any(dot->arg1, dd);
     return lsprintf("%s.%s", arg0, arg1);
@@ -241,9 +244,10 @@ pretty_print_dot(TreeNode* dot, int dd)
 char*
 pretty_print_bind(TreeNode* bind, int dd)
 {
+    assert(bind->type == BIND_TYPE);
+    char* symb = bind->name;
     char* arg0 = pretty_print_any(bind->arg0, dd);
-    char* arg1 = pretty_print_any(bind->arg1, dd);
-    return lsprintf("%s = %s", arg0, arg1);
+    return lsprintf("%s = %s", symb, arg0);
 }
 
 static

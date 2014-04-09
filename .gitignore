@@ -1,0 +1,9 @@
+
+.*.swp
+*.o
+
+src/parser/grammar.c
+src/parser/grammar.h
+src/parser/grammar.out
+
+bin/*

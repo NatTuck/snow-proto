@@ -83,7 +83,8 @@ expr(Y) ::= expr(A) SUBOP(B) expr(C).
 
 expr(Y) ::= SYMBOL(A) BIND expr(B).
 {
-    Y = alloc_bind_node(A, B);
+    TreeNode* sym = alloc_symbol_node(A);
+    Y = alloc_bind_node(sym, B);
 }
 
 expr(Y) ::= UNARY(A) expr(B).
