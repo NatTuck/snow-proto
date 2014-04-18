@@ -45,20 +45,17 @@ fun(Y) ::= FUN LPAREN SYMBOL(T) RPAREN SYMBOL(N) LPAREN params(PS) RPAREN block(
 
 block(Y) ::= expr(A).
 {
-    TreeNode* xs = alloc_list_node(A, 0);
-    Y = alloc_block_node(xs);
+    Y = alloc_list_node(A, 0);
 }
 
 block(Y) ::= expr(A) SEMI.
 {
-    TreeNode* xs = alloc_list_node(A, 0);
-    Y = alloc_block_node(xs);
+    Y = alloc_list_node(A, 0);
 }
 
 block(Y) ::= expr(A) SEMI block(B).
 {
-    TreeNode* xs = alloc_list_node(A, B->arg0);
-    Y = alloc_block_node(xs);
+    Y = alloc_list_node(A, B);
 }
 
 %type expr {TreeNode*}
@@ -97,6 +94,7 @@ expr(Y) ::= expr(A) MULOP(B) expr(C).
 expr(Y) ::= expr(A) ADDOP(B) expr(C). 
 { 
     Y = alloc_binop_node(B, A, C);
+    printf("addop!\n");
 }
 
 expr(Y) ::= expr(A) SUBOP(B) expr(C).

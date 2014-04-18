@@ -53,6 +53,9 @@ alloc_string_node(const char* name)
 TreeNode*
 alloc_list_node(TreeNode* head, TreeNode* tail)
 {
+    if (head == NULL)
+        carp("Can't have null CAR in list.");
+
     TreeNode* tn = alloc_tree_node(LIST_TYPE);
     tn->arg0 = head;
     tn->arg1 = tail;
@@ -98,11 +101,20 @@ alloc_bind_node(TreeNode* name, TreeNode* arg0)
     return tn;
 }
 
-TreeNode* 
-alloc_block_node(TreeNode* exprs)
+TreeNode*
+alloc_fun_node(const char* rtype, const char* name, TreeNode* params, TreeNode* body)
 {
-    TreeNode* tn = alloc_tree_node(BLOCK_TYPE);
-    tn->arg0 = exprs;
+    char* rcvr = 0;
+
+    if (rtype) {
+        rcvr = lstrdup(rtype);
+    }
+
+    TreeNode* tn = alloc_tree_node(FUN_TYPE);
+    tn->name = lstrdup(name);
+    tn->data = rcvr;
+    tn->arg0 = params;
+    tn->arg1 = body;
     return tn;
 }
 
@@ -152,7 +164,7 @@ reverse_list_node(TreeNode* xs)
 char*
 pretty_print_tree(TreeNode* node)
 {
-    return pretty_print_any(node, 0);
+    return pretty_print_list_items(node, "\n\n", 0);
 }
 
 char*
@@ -182,8 +194,8 @@ pretty_print_any(TreeNode* node, int dd)
         return pretty_print_bind(node, dd);
     case LIST_TYPE:
         return pretty_print_list(node, dd);
-    case BLOCK_TYPE:
-        return pretty_print_block(node, dd);
+    case FUN_TYPE:
+        return pretty_print_fun(node, dd);
     case LAMBDA_TYPE:
         return pretty_print_lambda(node, dd);
     case CALL_TYPE:
@@ -213,12 +225,14 @@ indent(int dd)
 char*
 pretty_print_string(TreeNode* ss, int dd)
 {
+    assert(ss->type == STRING_TYPE);
     return lsprintf("\"\"\"%s\"\"\"", (char*)ss->data);
 }
 
 char*
 pretty_print_binop(TreeNode* binop, int dd)
 {
+    assert(binop->type == BINOP_TYPE);
     char* arg0 = pretty_print_any(binop->arg0, dd);
     char* arg1 = pretty_print_any(binop->arg1, dd);
     return lsprintf("(%s %s %s)", arg0, binop->name, arg1);
@@ -227,6 +241,7 @@ pretty_print_binop(TreeNode* binop, int dd)
 char*
 pretty_print_unop(TreeNode* unop, int dd)
 {
+    assert(unop->type == UNOP_TYPE);
     char* arg0 = pretty_print_any(unop->arg0, dd);
     return lsprintf("(%s %s)", unop->name, arg0);
 }
@@ -248,15 +263,15 @@ pretty_print_bind(TreeNode* bind, int dd)
     return lsprintf("%s = %s", symb, arg0);
 }
 
-static
 char*
-pretty_print_list_items(TreeNode* list)
+pretty_print_list_items(TreeNode* list, const char* sep, int dd)
 {
+    assert(list->type == LIST_TYPE);
     char* text = lstrdup("");
 
     for (TreeNode* ii = list; ii != NULL; ii = ii->arg1) {
         char* item = pretty_print_any(ii->arg0, 0);
-        text = lsprintf("%s%s, ", text, item);
+        text = lsprintf("%s%s%s%s", indent(dd), text, item, sep);
     }
 
     return text;
@@ -265,48 +280,62 @@ pretty_print_list_items(TreeNode* list)
 char*
 pretty_print_list(TreeNode* list, int dd)
 {
-    char* items = pretty_print_list_items(list);
+    assert(list->type == LIST_TYPE);
+    char* items = pretty_print_list_items(list, ", ", 0);
     return lsprintf("[%s]", items);
 }
 
 char*
-pretty_print_block(TreeNode* block, int dd)
+pretty_print_fun(TreeNode* fun, int dd)
 {
-    char* text = lstrcat(indent(dd), "{{\n");
+    assert(fun->type == FUN_TYPE);
+    char* params = pretty_print_list_items(fun->arg0, ", ", 0);
+    char* body   = pretty_print_list_items(fun->arg1, ";\n", dd + 1);
 
-    TreeNode* ii = block->arg0;
-
-    for (; ii != NULL; ii = ii->arg1) {
-        text = lstrcat(text, indent(dd + 1));
-        text = lstrcat(text, pretty_print_any(ii->arg0, dd + 1));
-        text = lstrcat(text, "\n");
+    if (fun->data) {
+        char* rcvr = (char*) fun->data;
+        return lsprintf(
+            "fun (%s) %s(%s)\n%s;;\n", 
+            rcvr,
+            fun->name,
+            params,
+            body
+        );
     }
-
-    text = lstrcat(text, indent(dd));
-    return lstrcat(text, "}}\n");
+    else {
+        return lsprintf(
+            "fun %s(%s)\n%s;;\n",
+            fun->name,
+            params,
+            body
+        );
+    }
 }
 
 char*
 pretty_print_lambda(TreeNode* lambda, int dd)
 {
-    char* params = pretty_print_list_items(lambda->arg0);
-    char* body   = pretty_print_block(lambda->arg1, dd + 1);
-    return lsprintf("|%s| ->\n%s\n%s;;\n", params, body, indent(dd));
+    assert(lambda->type == LAMBDA_TYPE);
+    char* params = pretty_print_list_items(lambda->arg0, ", ", 0);
+    char* body   = pretty_print_list_items(lambda->arg1, ";\n", dd + 1);
+    return lsprintf("|%s| ->\n%s%s;;\n", params, body, indent(dd));
 }
 
 char*
 pretty_print_call(TreeNode* call, int dd)
 {
+    assert(call->type == CALL_TYPE);
     char* fun  = pretty_print_any(call->arg0, dd);
-    char* args = pretty_print_list_items(call->arg1);
+    char* args = pretty_print_list_items(call->arg1, ", ", 0);
     return lsprintf("%s(%s)", fun, args);
 }
 
 char*
 pretty_print_call_lambda(TreeNode* call, int dd)
 {
+    assert(call->type == CALL_LAMBDA_TYPE);
     char* fun  = pretty_print_any(call->arg0, dd);
-    char* args = pretty_print_list_items(call->arg1);
+    char* args = pretty_print_list_items(call->arg1, ", ", 0);
     char* lamb = pretty_print_lambda(call->arg2, dd);
     return lsprintf("%s(%s) %s", fun, args, lamb);
 }

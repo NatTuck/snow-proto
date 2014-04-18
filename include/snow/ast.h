@@ -39,14 +39,14 @@ TreeNode* alloc_binop_node(const char* op, TreeNode* arg0, TreeNode* arg1);
 TreeNode* alloc_unop_node(const char* op, TreeNode* arg0);
 TreeNode* alloc_dot_node(TreeNode* arg0, TreeNode* attr);
 TreeNode* alloc_bind_node(TreeNode* name, TreeNode* arg0);
-TreeNode* alloc_block_node(TreeNode* exprs);
-TreeNode* alloc_fun_node(const char* rtype, const char* name, 
+TreeNode* alloc_fun_node(const char* rtype, const char* name, TreeNode* params, TreeNode* body);
 TreeNode* alloc_lambda_node(TreeNode* params, TreeNode* body);
 TreeNode* alloc_call_node(TreeNode* fun, TreeNode* args);
 TreeNode* alloc_call_lambda_node(TreeNode* fun, TreeNode* arg,
         TreeNode* lambda);
 
 TreeNode* reverse_list_node(TreeNode* xs);
+char* pretty_print_list_items(TreeNode* node, const char* sep, int dd);
 
 char* pretty_print_tree(TreeNode* node);
 char* pretty_print_any(TreeNode* node, int dd);
@@ -58,8 +58,8 @@ char* pretty_print_binop(TreeNode* node, int dd);
 char* pretty_print_unop(TreeNode* node, int dd);
 char* pretty_print_dot(TreeNode* node, int dd);
 char* pretty_print_bind(TreeNode* node, int dd);
-char* pretty_print_list(TreeNode* ndoe, int dd);
-char* pretty_print_block(TreeNode* node, int dd);
+char* pretty_print_list(TreeNode* node, int dd);
+char* pretty_print_fun(TreeNode* node, int dd);
 char* pretty_print_lambda(TreeNode* node, int dd);
 char* pretty_print_call(TreeNode* node, int dd);
 char* pretty_print_call_lambda(TreeNode* node, int dd);

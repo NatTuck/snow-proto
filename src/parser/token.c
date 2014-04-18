@@ -6,30 +6,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "drip/lstring.h"
 #include "drip/carp.h"
 
 #include "snow/token.h"
 
 #include "grammar.h"
-
-char*
-lstrdupn(const char* aa, int nn)
-{
-    char* bb = GC_malloc(nn + 1);
-    
-    for (int ii = 0; ii < nn; ++ii) {
-        bb[ii] = aa[ii];
-    }
-
-    bb[nn] = 0;
-    return bb;
-}
-
-char*
-lstrdup(const char* aa)
-{
-    return lstrdupn(aa, strlen(aa));
-}
 
 char*
 token_get_number(const char* text, int p0)
@@ -158,8 +140,16 @@ next_token(const char* text, int* pos)
             token->text = token_get_number(text, *pos);
         }
         else if (isalpha(text[*pos])) {
-            token->code = SYMBOL;
-            token->text = token_get_symbol(text, *pos);
+            char* sym = token_get_symbol(text, *pos);
+
+            if (streq(sym, "fun")) {
+                token->code = FUN;
+                token->text = sym;
+            }
+            else {
+                token->code = SYMBOL;
+                token->text = sym;
+            }
         }
     }
 
@@ -169,6 +159,8 @@ next_token(const char* text, int* pos)
     }
 
     *pos += strlen(token->text);
+
+    //printf("token: %s (%d)\n", token->text, token->code);
 
     return token;
 }
