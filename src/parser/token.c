@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "drip/carp.h"
+
 #include "snow/token.h"
 
 #include "grammar.h"
@@ -114,6 +116,26 @@ next_token(const char* text, int* pos)
         token->text = lstrdupn(text + *pos, 1);
         break;
 
+    case '(':
+        token->code = LPAREN;
+        token->text = lstrdupn(text + *pos, 1);
+        break;
+
+    case ')':
+        token->code = RPAREN;
+        token->text = lstrdupn(text + *pos, 1);
+        break;
+
+    case ',':
+        token->code = COMMA;
+        token->text = lstrdupn(text + *pos, 1);
+        break;
+
+    case '.':
+        token->code = DOTOP;
+        token->text = lstrdupn(text + *pos, 1);
+        break;
+
     case ';':
         if (text[*pos + 1] == ';') {
             token->code = END;
@@ -141,7 +163,10 @@ next_token(const char* text, int* pos)
         }
     }
 
-    assert(token->text != 0);
+    if (token->text == 0) {
+        fprintf(stderr, "Unknown token here:\n  %s\n\n", text + *pos);
+        carp("Tokenizer is giving up.");
+    }
 
     *pos += strlen(token->text);
 

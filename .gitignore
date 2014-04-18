@@ -7,3 +7,4 @@ src/parser/grammar.h
 src/parser/grammar.out
 
 bin/*
+lib/*

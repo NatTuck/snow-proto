@@ -80,7 +80,8 @@ expr(Y) ::= STRING(A).
 
 expr(Y) ::= expr(A) DOTOP SYMBOL(C).
 {
-    Y = alloc_dot_node(A, C);
+    TreeNode* sym = alloc_symbol_node(C);
+    Y = alloc_dot_node(A, sym);
 }
 
 expr(Y) ::= expr(A) POWOP(B) expr(C).

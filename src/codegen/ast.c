@@ -135,7 +135,6 @@ alloc_call_lambda_node(TreeNode* fun, TreeNode* args,
     return tn;
 }
 
-
 TreeNode* 
 reverse_list_node(TreeNode* xs)
 {
@@ -143,7 +142,7 @@ reverse_list_node(TreeNode* xs)
 
     TreeNode* ys = 0;
 
-    for (TreeNode* ii = xs; ii->arg0 != NULL; ii = ii->arg1) {
+    for (TreeNode* ii = xs; ii != NULL; ii = ii->arg1) {
         ys = alloc_list_node(ii->arg0, ys);
     }
 
@@ -237,8 +236,7 @@ pretty_print_dot(TreeNode* dot, int dd)
 {
     assert(dot->type == DOT_TYPE);
     char* arg0 = pretty_print_any(dot->arg0, dd);
-    char* arg1 = pretty_print_any(dot->arg1, dd);
-    return lsprintf("%s.%s", arg0, arg1);
+    return lsprintf("%s.%s", arg0, dot->name);
 }
 
 char*
