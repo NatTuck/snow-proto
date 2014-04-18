@@ -13,6 +13,7 @@ enum {
     DOT_TYPE,
     BIND_TYPE,
     LIST_TYPE,
+    FUN_TYPE,
     BLOCK_TYPE,
     LAMBDA_TYPE,
     CALL_TYPE,
@@ -39,6 +40,7 @@ TreeNode* alloc_unop_node(const char* op, TreeNode* arg0);
 TreeNode* alloc_dot_node(TreeNode* arg0, TreeNode* attr);
 TreeNode* alloc_bind_node(TreeNode* name, TreeNode* arg0);
 TreeNode* alloc_block_node(TreeNode* exprs);
+TreeNode* alloc_fun_node(const char* rtype, const char* name, 
 TreeNode* alloc_lambda_node(TreeNode* params, TreeNode* body);
 TreeNode* alloc_call_node(TreeNode* fun, TreeNode* args);
 TreeNode* alloc_call_lambda_node(TreeNode* fun, TreeNode* arg,

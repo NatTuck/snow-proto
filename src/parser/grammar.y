@@ -14,9 +14,31 @@
 
 %type module {TreeNode*}
 
-module ::= block(A).
+module ::= funs(A).
 {
     *root = A;
+}
+
+funs(Y) ::= fun(A).
+{
+    Y = alloc_list_node(A, 0);
+}
+
+funs(Y) ::= fun(A) funs(AS).
+{
+    Y = alloc_list_node(A, AS);
+}
+
+%type fun {TreeNode*}
+
+fun(Y) ::= FUN SYMBOL(N) LPAREN params(PS) RPAREN block(B) END.
+{
+    Y = alloc_fun_node(0, N, PS, B);
+}
+
+fun(Y) ::= FUN LPAREN SYMBOL(T) RPAREN SYMBOL(N) LPAREN params(PS) RPAREN block(B) END.
+{
+    Y = alloc_fun_node(T, N, PS, B);
 }
 
 %type block {TreeNode*}

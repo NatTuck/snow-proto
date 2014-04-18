@@ -1,0 +1,28 @@
+
+Snow programs consist of a DAG of modules.
+
+Each module contains one or more functions.
+
+Program execution starts with "main.main", the function "main" in
+the module "main".
+
+When the program starts, the following steps occur:
+
+ - The main module is loaded
+ - Referenced modules are loaded, recursively.
+ - The program is partially typed, starting at
+   main.main.
+ - The program is compiled, leaf functions up,
+   with partial types. Each function is generated
+   as a shim plus a partially typed version.
+ - Execution starts at main.main.
+ - When each function is executed the first time
+   with concrete arguments of a given set of types,
+   a specialized version is generated in parallel
+   with the execution of the partially typed version.
+   The specialized version is then executed if the
+   function is pure.
+ - Whichever function finishes first wins and the
+   other one is killed (thread signals, siglongjmp out).
+
+

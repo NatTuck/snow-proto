@@ -29,7 +29,6 @@ bin/parse: $(OBJS)
 %.o : %.c $(HDRS)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-.PHONY: all clean $(PHONY)
 
 parse: parse.c token.c grammar.c grammar.h
 	$(CC) -o parse parse.c token.c grammar.c $(LIBS)
@@ -40,5 +39,10 @@ grammar.c: grammar.y lemon
 grammar.h: grammar.c
 	touch grammar.h
 
+prereqs:
+	sudo apt-get install build-essential clang llvm-dev manpages-posix-dev 
+
 clean:
 	rm -f $(BINS) $(OBJS) $(DEBRIS)
+
+.PHONY: all clean prereqs $(PHONY)
