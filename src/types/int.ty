@@ -1,0 +1,21 @@
+
+%type int
+
+%prim int64_t
+
+%meth hash() -> uint64_t
+{
+    return ctx->hash_seed ^ hash64(&self, sizeof(self));
+}
+
+%meth to_s() -> sstr
+{ 
+    return lsprintf("%ld", self);
+}
+
+%meth to_i() -> int64_t
+{
+    return self;
+}
+
+// vim: set filetype=c :
